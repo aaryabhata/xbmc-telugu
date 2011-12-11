@@ -43,7 +43,8 @@ regexp = {
 #regexes for different urls
 vmregex = {
     'Recently Written' : '''<li><a href='(.*?)' title=(.*?)</a></li>''',
-    'Telugu Movies' : '''<li><a href="(.*?)"><span class="head">(.*?)</span></a></li>'''
+    'Telugu Movies' : '''<li><a href="(.*?)"><span class="head">(.*?)</span></a></li>''',
+    'Hindi Movies' : '''<li><a href="(.*?)"><span class="head">(.*?)</span></a></li>'''
     }
 
 def Msg(message):
@@ -122,11 +123,24 @@ def unescape(text):
         return text # leave as is
     return re.sub("&#?\w+;", fixup, text)
 
+def TELUGUMOVIES():
+    for c in ascii_lowercase:
+        addDir('Telugu Movies-'+c.upper(), 'http://videomasti.net/telugu-movie-index-'+ c +'/', 0, '')
+    
+    xbmcplugin.endOfDirectory(int(sys.argv[1]))
+        
+def HINDIMOVIES():
+    for c in ascii_lowercase:
+        addDir('Hindi Movies-'+c.upper(), 'http://videomasti.net/hindi-movie-index-'+ c +'/', 0, '')
+    xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
 #This function is invoked at startup
 def STARTUP():    
     addDir('Recently Written', 'http://www.videomasti.net', 0, '')
-    for c in ascii_lowercase:
-        addDir('Telugu Movies-'+c.upper(), 'http://videomasti.net/telugu-movie-index-'+ c +'/', 0, '')
+    addDir('Telugu Movies', 'http://www.videomasti.net', 3, '')
+    addDir('Hindi Movies', 'http://www.videomasti.net', 4, '')
+
+    
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def CATEGORIES(title, url):
@@ -136,7 +150,7 @@ def CATEGORIES(title, url):
     if title == 'Recently Written':
         link = re.compile('''<h2>Recently Written</h2>.*?<ul>(.*?)</ul>''',re.I|re.MULTILINE|re.DOTALL).findall(link)[0]
     
-    elif title.find('Telugu Movies')!= -1:
+    elif title.find('Telugu Movies')!= -1 or title.find('Hindi Movies') != -1:
         link = re.compile('''<div class=(.*?)</div>''', re.I|re.MULTILINE|re.DOTALL).findall(link)[0]
     
     match = re.compile(vmregex[title.split('-')[0]]).findall(link)
@@ -278,7 +292,12 @@ def main():
             
     elif mode == 2:
         VIDEOLIST(url)
-
+    
+    elif mode == 3:
+        TELUGUMOVIES()
+    
+    elif mode == 4:
+        HINDIMOVIES()
 
 if __name__ == "__main__":
     main()
