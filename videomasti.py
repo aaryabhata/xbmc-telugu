@@ -27,6 +27,7 @@ user_agent = 'Mozilla/5.0 (X11; Linux i686; rv:8.0) Gecko/20100101 Firefox/8.0'
 regexp = {
     'youtube.1': re.compile(r'<param name="movie" value="https?://www.youtube.com/v/(.*?)&'),
     'youtube.2': re.compile(r'<param name="movie" value="https?://www.youtube.com/v/(.*?)\?'),
+    'youtube.3': re.compile(r'iframe(?:.*)src="http://www.youtube.com/embed/(.*?)\?feature=player_embedded"'),
     
     'videozer.1': re.compile(r'<param name="movie" value="http://(?:www\.)?videozer.com/e(?:mbed)?/(.*?)"'),
     'videozer.2' : re.compile(r'<meta content="http://videozer.com/video/(.*?)"'),
@@ -139,8 +140,8 @@ def STARTUP():
     addDir('Recently Written', 'http://www.videomasti.net', 0, '')
     addDir('Telugu Movies', 'http://www.videomasti.net', 3, '')
     addDir('Hindi Movies', 'http://www.videomasti.net', 4, '')
-
-    
+    addDir('Teluguone', 'http://www.videomasti.net', 5, '')
+    #plugin://plugin.video.youtube/','0','?path=/root/subscriptions&feed=subscriptions_uploads&view_mode=subscriptions_favorites&login=true&channel=teluguone&
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def CATEGORIES(title, url):
@@ -163,13 +164,18 @@ def CATEGORIES(title, url):
     
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
+def TELUGUONE(url):
+    #addLink('teluguone', 'plugin://plugin.video.youtube/?path=/channel=teluguone&',3,'')
+    pass
+
 def SORTMETHOD(url):
     debug("SORTMETHOD: url is %s" %url)
     
     link = getResponse(url)
     match = []
-    watchMatch = re.compile(r'''<a href=["'](.*?)['"]>(Wa.*?)</a>''',re.I).findall(link)
-    
+    #debug('link is %s' %link)
+    watchMatch = re.compile(r'''<a href=["']([^;]*?)['"]>(Wa.*?)<''',re.I).findall(link)
+    debug("watch match is %s" %watchMatch)
     if watchMatch:
         for tuple in watchMatch:
             if tuple[0].find('href') == -1:
@@ -201,7 +207,7 @@ def VIDEOLIST(url):
         m = pat.findall(link)
         if m:
             debug("VIDEOLIST match is %s" %m)
-            if  key in ['youtube.2','videobb.1','videozer.1','videozer.2','videobb.2', 'youtube.1'] :
+            if  key in ['youtube.2','videobb.1','videozer.1','videozer.2','videobb.2', 'youtube.1', 'youtube.3'] :
                 try:
                     url = urlresolver.HostedMediaFile('', key.split('.')[0]+'.com', m[0]).resolve()
                 except:
@@ -298,6 +304,9 @@ def main():
     
     elif mode == 4:
         HINDIMOVIES()
+    
+    elif mode == 5:
+        TELUGUONE(url)
 
 if __name__ == "__main__":
     main()
