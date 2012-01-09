@@ -45,7 +45,8 @@ regexp = {
 vmregex = {
     'Recently Written' : '''<li><a href='(.*?)' title=(.*?)</a></li>''',
     'Telugu Movies' : '''<li><a href="(.*?)"><span class="head">(.*?)</span></a></li>''',
-    'Hindi Movies' : '''<li><a href="(.*?)"><span class="head">(.*?)</span></a></li>'''
+    'Hindi Movies' : '''<li><a href="(.*?)"><span class="head">(.*?)</span></a></li>''',
+    'Page View' : '''<div class="contenttitle">.*?<h1><a href="(.*?)".*?>(.*?)</a>'''
     }
 
 def Msg(message):
@@ -145,21 +146,28 @@ def STARTUP():
     addDir('Recently Written', 'http://www.videomasti.net', 0, '')
     addDir('Telugu Movies', 'http://www.videomasti.net', 3, '')
     addDir('Hindi Movies', 'http://www.videomasti.net', 4, '')
-    addDir('Teluguone', 'http://www.videomasti.net', 5, '')
+    addDir('IBNLIVE', 'http://www.videomasti.net', 5, '')
+    addDir('Page View', 'http://www.videomasti.net', 6, '')
     #plugin://plugin.video.youtube/','0','?path=/root/subscriptions&feed=subscriptions_uploads&view_mode=subscriptions_favorites&login=true&channel=teluguone&
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
-def CATEGORIES(title, url):
+def CATEGORIES(title, url, page=1):
     debug("CATEGORIES called with url %s" %url)
     link = getResponse(url)
     
     if title == 'Recently Written':
         link = re.compile('''<h2>Recently Written</h2>.*?<ul>(.*?)</ul>''',re.I|re.MULTILINE|re.DOTALL).findall(link)[0]
+        match = re.compile(vmregex[title.split('-')[0]]).findall(link)
     
     elif title.find('Telugu Movies')!= -1 or title.find('Hindi Movies') != -1:
         link = re.compile('''<div class=(.*?)</div>''', re.I|re.MULTILINE|re.DOTALL).findall(link)[0]
+        match = re.compile(vmregex[title.split('-')[0]]).findall(link)
     
-    match = re.compile(vmregex[title.split('-')[0]]).findall(link)
+    elif title.find('Page') != -1:
+        match = re.compile('''<div class="contenttitle">.*?<h1><a href="(.*?)".*?>(.*?)</a>''', re.I|re.MULTILINE|re.DOTALL).findall(link)
+        page = page+1
+        addDir("Next Page", "http://www.videomasti.net/page/"+str(page), 6,"", page)
+   
     
     for url, title in match:
         if type(title) is str:
@@ -258,9 +266,9 @@ def addLink(name, url, mode, iconimage):
     ok=xbmc.Player(xbmc.PLAYER_CORE_DVDPLAYER).play(url, liz)
     return ok
 
-def addDir(name, url, mode, iconimage):
+def addDir(name, url, mode, iconimage, page=0):
     debug("addDir called with %s" %url)
-    u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode) + "&name=" + urllib.quote_plus(name)
+    u = sys.argv[0] + "?url=" + urllib.quote_plus(url) + "&mode=" + str(mode) + "&name=" + urllib.quote_plus(name) + "&page=" + str(page)
     ok = True
     liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
@@ -312,6 +320,9 @@ def main():
     
     elif mode == 5:
         IBNLIVE(url)
+        
+    elif mode == 6:
+        CATEGORIES(name, url, page)
 
 if __name__ == "__main__":
     main()
