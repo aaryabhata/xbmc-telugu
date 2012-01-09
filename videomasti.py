@@ -129,6 +129,11 @@ def TELUGUMOVIES():
         addDir('Telugu Movies-'+c.upper(), 'http://videomasti.net/telugu-movie-index-'+ c +'/', 0, '')
     
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+def IBNLIVE(url):
+    #addLink('teluguone', 'plugin://plugin.video.youtube/?path=/channel=teluguone&',3,'')
+    pass
+
         
 def HINDIMOVIES():
     for c in ascii_lowercase:
@@ -165,8 +170,8 @@ def CATEGORIES(title, url):
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def TELUGUONE(url):
-    #addLink('teluguone', 'plugin://plugin.video.youtube/?path=/channel=teluguone&',3,'')
-    pass
+    addLink('teluguone', 'http://bglive-a.bitgravity.com/web18/secure/feed04?e=2648438512&h=b23fb62b4901e2b24af3d31aac682bde',3,'')
+    xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def SORTMETHOD(url):
     debug("SORTMETHOD: url is %s" %url)
@@ -174,14 +179,14 @@ def SORTMETHOD(url):
     link = getResponse(url)
     match = []
     #debug('link is %s' %link)
-    watchMatch = re.compile(r'''<a href=["']([^;]*?)['"]>(Wa.*?)<''',re.I).findall(link)
+    watchMatch = re.compile(r'''<a href=["']([^ ;]*?)['"]>(Wa.*?)<''',re.I).findall(link)
     debug("watch match is %s" %watchMatch)
     if watchMatch:
         for tuple in watchMatch:
             if tuple[0].find('href') == -1:
                 match.append(tuple) 
 
-    partMatch = re.compile(r'''<a href=["'](.*?)["']>(Par.*?)</a>''',re.I).findall(link)
+    partMatch = re.compile(r'''<a href=["']([^ ;]*?)["']>(Par.*?)</a>''',re.I).findall(link)
     
     if partMatch:
         for tuple in partMatch:
