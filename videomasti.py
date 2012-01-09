@@ -131,7 +131,7 @@ def TELUGUMOVIES():
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def IBNLIVE(url):
-    #addLink('teluguone', 'plugin://plugin.video.youtube/?path=/channel=teluguone&',3,'')
+    #addLink('ibnlive', 'plugin://plugin.video.youtube/?path=/channel=teluguone&',3,'')
     pass
 
         
@@ -169,8 +169,8 @@ def CATEGORIES(title, url):
     
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
-def TELUGUONE(url):
-    addLink('teluguone', 'http://bglive-a.bitgravity.com/web18/secure/feed04?e=2648438512&h=b23fb62b4901e2b24af3d31aac682bde',3,'')
+def IBNLIVE(url):
+    addLink('ibnlive', 'http://bglive-a.bitgravity.com/web18/secure/feed04?e=2648438512&h=b23fb62b4901e2b24af3d31aac682bde',3,'')
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def SORTMETHOD(url):
@@ -311,7 +311,7 @@ def main():
         HINDIMOVIES()
     
     elif mode == 5:
-        TELUGUONE(url)
+        IBNLIVE(url)
 
 if __name__ == "__main__":
     main()
